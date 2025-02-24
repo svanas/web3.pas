@@ -6,11 +6,11 @@ pas2web3 is built upon [TMS Web Core](https://www.tmssoftware.com/site/tmswebcor
 
 Under the hood, pas2web3 is powered by [ethers.js](https://ethers.org) — a JavaScript library designed to enable developers to interact with the Ethereum blockchain and the larger Ethereum ecosystem.
 
-Ethers.js is included with pas2web3 and as such you don’t need to download and install it. But you do need [Delphi Community Edition](https://www.embarcadero.com/products/delphi/starter) and TMS Web Core.
+Ethers.js is included with pas2web3 and as such you don’t need to download and install it. But you do need [Delphi Community Edition](https://www.embarcadero.com/products/delphi/starter) and [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp#downloads).
 
 ### Setup
 
-Before you can use pas2web3 in your TMS Web Core project, you will need to manually add the following snippet to the `<head>` section of your HTML document:
+Before you can use pas2web3 in your TMS Web Core project, you will need to manually add the following snippet to the `<head>` section of your project's HTML document:
 
 ```html
 <script type="module">
