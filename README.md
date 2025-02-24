@@ -23,9 +23,9 @@ Assuming you have added the pas2web3 directory to your TMS Web Source Path and y
 
 ```delphi
 var
-  value: TWei;
+  wei: TWei;
 begin
-  value := Ethers.ParseEther('1.0');
-  ShowMessage(WeiToHex(value));
+  wei := Ethers.ParseEther('1.0');
+  ShowMessage(WeiToHex(wei));
 end;
 ```
