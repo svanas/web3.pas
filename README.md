@@ -59,7 +59,7 @@ begin
     provider := Ethers.GetDefaultProvider
   else
     provider := Ethers.BrowserProvider.New(Ethereum);
-  console.log(provider);
+  ...
 end;
 ```
 
