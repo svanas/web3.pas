@@ -8,6 +8,8 @@ Under the hood, pas2web3 is powered by [ethers.js](https://ethers.org) — a Jav
 
 Ethers.js is included with pas2web3 and as such you don’t need to download and install it. But you do need [Delphi Community Edition](https://www.embarcadero.com/products/delphi/starter) and [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp#downloads).
 
+The other thing you need is a browser-based crypto wallet. Please follow the below steps to install MetaMask into your web browser.
+
 ### Installation
 
 1. Clone this repo to a directory of your choosing, for example `C:\Projects\pas2web3`
@@ -15,7 +17,14 @@ Ethers.js is included with pas2web3 and as such you don’t need to download and
 3. Add `C:\Projects\pas2web3` to the Library Path
 4. Start a new TMS Web Core project via _File > New > Other > TMS Web > TMS Web Application_
 5. Click on _Project > Options > TMS Web > Compile_
-6. Add `C:\Projects\pas2web3` to the Source Path
+6. Make sure the Target is set to `All configurations - All platforms`
+7. Add `C:\Projects\pas2web3` to the Source Path
+8. Run your application (F9)
+9. Navigate to https://metamask.io/
+10. Click on Get MetaMask
+11. Follow the instructions and install MetaMask into your web browser
+
+Please note you will need to repeat steps 5-7 every time you start a new TMS Web Core project.
 
 ### Configuration
 
