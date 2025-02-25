@@ -17,14 +17,13 @@ The other thing you need is a browser-based crypto wallet. Please follow the bel
 3. Add `C:\Projects\pas2web3` to the Library Path
 4. Start a new TMS Web Core project via _File > New > Other > TMS Web > TMS Web Application_
 5. Click on: _Project > Options > TMS Web > Compile_
-6. Make sure the Target is set to `All configurations - All platforms`
-7. Add `C:\Projects\pas2web3` to the Source Path
-8. Run your application (F9)
-9. Navigate to https://metamask.io/
-10. Click on: Get MetaMask
-11. Follow the instructions and install MetaMask into your web browser
+6. Add `C:\Projects\pas2web3` to the Source Path
+7. Run your application (F9)
+8. Navigate to https://metamask.io/
+9. Click on: Get MetaMask
+10. Follow the instructions and install MetaMask into your web browser
 
-Please note you will need to repeat steps 5-7 every time you start a new TMS Web Core project.
+Please note you will need to repeat steps 5 and 6 every time you start a new TMS Web Core project.
 
 ### Configuration
 
@@ -64,7 +63,7 @@ begin
 end;
 ```
 
-The above snippet will give you read-only access to the blockchain. When requesting write access to the blockchain, such as sending a transaction, MetaMask will show a pop-up to the user asking for permission.
+The above snippet will give you read-only access to the blockchain. When requesting write access to the blockchain - such as sending a transaction - MetaMask will show a pop-up to the user asking for permission.
 
 ### Learn more
 
