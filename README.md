@@ -49,7 +49,7 @@ end;
 
 ### Connecting to Ethereum
 
-This very first thing needed to begin interacting with the blockchain is connecting to it using a [Provider](https://docs.ethers.org/v6/api/providers/#Provider).
+The very first thing needed to begin interacting with the blockchain is connecting to it using a [Provider](https://docs.ethers.org/v6/api/providers/#Provider).
 
 ```delphi
 var
