@@ -13,18 +13,17 @@ The other thing you need is a browser-based crypto wallet. Please follow the bel
 ### Installation
 
 1. Clone this repo to a directory of your choosing, for example `C:\Projects\pas2web3`
-2. Start Delphi. Click on _Tools > Options > Language > Delphi > Library_
+2. Start Delphi. Click on: _Tools > Options > Language > Delphi > Library_
 3. Add `C:\Projects\pas2web3` to the Library Path
 4. Start a new TMS Web Core project via _File > New > Other > TMS Web > TMS Web Application_
-5. Click on _Project > Options > TMS Web > Compile_
-6. Make sure the Target is set to `All configurations - All platforms`
-7. Add `C:\Projects\pas2web3` to the Source Path
-8. Run your application (F9)
-9. Navigate to https://metamask.io/
-10. Click on Get MetaMask
-11. Follow the instructions and install MetaMask into your web browser
+5. Click on: _Project > Options > TMS Web > Compile_
+6. Add `C:\Projects\pas2web3` to the Source Path
+7. Run your application (F9)
+8. Navigate to https://metamask.io/
+9. Click on: Get MetaMask
+10. Follow the instructions and install MetaMask into your web browser
 
-Please note you will need to repeat steps 5-7 every time you start a new TMS Web Core project.
+Please note you will need to repeat steps 5 and 6 every time you start a new TMS Web Core project.
 
 ### Configuration
 
@@ -48,6 +47,24 @@ begin
 end;
 ```
 
-### Getting Started
+### Connecting to Ethereum
+
+The very first thing needed to begin interacting with the blockchain is connecting to it using a [Provider](https://docs.ethers.org/v6/api/providers/#Provider).
+
+```delphi
+var
+  provider: TJsonRpcApiProvider;
+begin
+  if not Assigned(Ethereum) then
+    provider := Ethers.GetDefaultProvider
+  else
+    provider := Ethers.BrowserProvider.New(Ethereum);
+  ...
+end;
+```
+
+The above snippet will give you read-only access to the blockchain. When requesting write access to the blockchain - such as sending a transaction - MetaMask will show a pop-up to the user asking for permission.
+
+### Learn more
 
 This is a very short introduction, but covers many of the most common operations that developers require and provides a starting point for those newer to Ethereum: https://docs.ethers.org/v6/getting-started/
