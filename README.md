@@ -8,7 +8,7 @@ Under the hood, pas2web3 is powered by [ethers.js](https://ethers.org) — a Jav
 
 Ethers.js is included with pas2web3 and as such you don’t need to download and install it. But you do need [Delphi Community Edition](https://www.embarcadero.com/products/delphi/starter) and [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp#downloads).
 
-Last but not least, you need is a browser-based crypto wallet. Please follow the below steps to install MetaMask into your web browser.
+Last but not least, you need a browser-based crypto wallet. Please follow the below steps to install MetaMask into your web browser.
 
 ### Installation
 
