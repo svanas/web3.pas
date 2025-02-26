@@ -9,9 +9,19 @@ uses
   JS;
 
 type
-  TWei = class external name 'BigInt'(TJSObject)
+  TBigInt = class external name 'BigInt'(TJSObject)
   public
     function ToString(Base: Integer): string; external name 'toString';
+  end;
+  TWei = TBigInt;
+
+  TNetwork = class external name 'Network'(TJSObject)
+  private
+    FChainId: TBigInt; external name 'chainId';
+    FName: string; external name 'name';
+  public
+    property ChainId: TBigInt read FChainId;
+    property Name: string read FName;
   end;
 
   TAbstractProvider = class abstract external name 'AbstractProvider'(TJSObject)
@@ -19,6 +29,7 @@ type
     function GetBlockNumber: UInt64; async; external name 'getBlockNumber';
     function GetBalance(const address: string): TWei; async; external name 'getBalance';
     function GetTransactionCount(const address: string): UInt64; async; external name 'getTransactionCount';
+    function GetNetwork: TNetwork; async; external name 'getNetwork';
   end;
 
   TJsonRpcApiProvider = class abstract external name 'JsonRpcApiProvider'(TAbstractProvider)
