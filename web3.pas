@@ -24,12 +24,24 @@ type
     property Name: string read FName;
   end;
 
+  TFeeData = class external name 'FeeData'(TJSObject)
+  private
+    FGasPrice: TBigInt; external name 'gasPrice';
+    FMaxFeePerGas: TBigInt; external name 'maxFeePerGas';
+    FMaxPriorityFeePerGas: TBigInt; external name 'maxPriorityFeePerGas';
+  public
+    property GasPrice: TBigInt read FGasPrice;
+    property MaxFeePerGas: TBigInt read FMaxFeePerGas;
+    property MaxPriorityFeePerGas: TBigInt read FMaxPriorityFeePerGas;
+  end;
+
   TAbstractProvider = class abstract external name 'AbstractProvider'(TJSObject)
   public
     function GetBlockNumber: UInt64; async; external name 'getBlockNumber';
     function GetBalance(const address: string): TWei; async; external name 'getBalance';
     function GetTransactionCount(const address: string): UInt64; async; external name 'getTransactionCount';
     function GetNetwork: TNetwork; async; external name 'getNetwork';
+    function GetFeeData: TFeeData; async; external name 'getFeeData';
   end;
 
   TJsonRpcApiProvider = class abstract external name 'JsonRpcApiProvider'(TAbstractProvider)
