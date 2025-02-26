@@ -8,7 +8,7 @@ Under the hood, pas2web3 is powered by [ethers.js](https://ethers.org) — a Jav
 
 Ethers.js is included with pas2web3 and as such you don’t need to download and install it. But you do need [Delphi Community Edition](https://www.embarcadero.com/products/delphi/starter) and [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp#downloads).
 
-The other thing you need is a browser-based crypto wallet. Please follow the below steps to install MetaMask into your web browser.
+Last but not least, you need is a browser-based crypto wallet. Please follow the below steps to install MetaMask into your web browser.
 
 ### Installation
 
@@ -49,7 +49,7 @@ end;
 
 ### Connecting to Ethereum
 
-The very first thing needed to begin interacting with the blockchain is connecting to it using a [Provider](https://docs.ethers.org/v6/api/providers/#Provider).
+The very first thing needed to begin interacting with the blockchain is connecting to it using a [Provider](https://docs.ethers.org/v6/api/providers/#Provider):
 
 ```delphi
 var
@@ -64,6 +64,24 @@ end;
 ```
 
 The above snippet will give you read-only access to the blockchain. When requesting write access to the blockchain - such as sending a transaction - MetaMask will show a pop-up to the user asking for permission.
+
+### Interacting with the Blockchain
+
+Once you have a [Provider](https://docs.ethers.org/v6/api/providers/#Provider), you have a read-only connection to the data on the blockchain. This can be used to query the current account state, fetch historic logs, look up contract code and so on.
+
+```delphi
+// Look up the current block number (i.e. height)
+console.log(await(UInt64, provider.GetBlockNumber));
+
+// Get the current balance of an account (by address or ENS name)
+balance := await(TWei, provider.GetBalance('vitalik.eth'));
+
+// Since the balance is in wei, you may wish to display it in ether instead.
+console.log(Ethers.FormatEther(balance));
+
+// Get the next nonce required to send a transaction
+console.log(await(UInt64, provider.GetTransactionCount('vitalk.eth')));
+```
 
 ### Learn more
 
