@@ -15,6 +15,10 @@ type
   end;
 
   TAbstractProvider = class abstract external name 'AbstractProvider'(TJSObject)
+  public
+    function GetBlockNumber: UInt64; async; external name 'getBlockNumber';
+    function GetBalance(const address: string): TWei; async; external name 'getBalance';
+    function GetTransactionCount(const address: string): UInt64; async; external name 'getTransactionCount';
   end;
 
   TJsonRpcApiProvider = class abstract external name 'JsonRpcApiProvider'(TAbstractProvider)
