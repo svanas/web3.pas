@@ -101,7 +101,7 @@ To write to the blockchain you require access to a private key. In most cases, t
 ```delphi
 var
   provider: TJsonRpcApiProvider;
-  signer: TJsonRpcSigner;
+  signer  : TJsonRpcSigner;
 begin
   signer := nil;
   if Assigned(Ethereum) then
@@ -117,6 +117,28 @@ begin
     // by a variety of third-party services (such as Infura).
     // They do not have private keys installed, so they only have read-only access.
     provider := Ethers.GetDefaultProvider;
+  ...
+end;
+```
+
+Once you have a [Signer](https://docs.ethers.org/v6/api/providers/#Signer), you can have MetaMask sign your transaction and broadcast it to the network:
+
+```delphi
+var
+  tx      : TTransaction;
+  response: TTransactionResponse;
+  receipt : TTransactionReceipt;  
+begin
+  // When sending a transaction, the value is in wei, so ParseEther converts ether to wei.
+  tx := Transaction(
+    BigInt(1),                                    // Ethereum mainnet, see: chainlist.org
+    '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // To: vitalik.eth
+    Ethers.ParseEther('1.0')                      // Value
+  );
+  // Send tx to the network
+  response := await(TTransactionResponse, signer.SendTransaction(tx));
+  // Often you may wish to wait until the transaction is mined
+  receipt := await(TTransactionReceipt, response.Wait);
   ...
 end;
 ```
