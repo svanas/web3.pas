@@ -50,7 +50,7 @@ var
   wei: TWei;
 begin
   wei := Ethers.ParseEther('1.0');
-  ShowMessage(WeiToHex(wei));
+  ShowMessage(wei.ToString);
 end;
 ```
 
