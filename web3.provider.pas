@@ -11,7 +11,7 @@ uses
   web3.classes, web3.signer;
 
 type
-  TAbstractProvider = class abstract external name 'AbstractProvider'(TJSObject)
+  TAbstractProvider = class abstract external name 'ethers.AbstractProvider'(TJSObject)
   public
     function GetBlockNumber: UInt64; async; external name 'getBlockNumber';
     function GetBalance(const address: string): TWei; async; external name 'getBalance'; overload;
@@ -22,18 +22,18 @@ type
     function GetFeeData: TFeeData; async; external name 'getFeeData';
   end;
 
-  TJsonRpcApiProvider = class abstract external name 'JsonRpcApiProvider'(TAbstractProvider)
+  TJsonRpcApiProvider = class abstract external name 'ethers.JsonRpcApiProvider'(TAbstractProvider)
   public
     function GetSigner: TJsonRpcSigner; async; external name 'getSigner';
   end;
 
-  TBrowserProvider = class external name 'BrowserProvider'(TJsonRpcApiProvider)
+  TBrowserProvider = class external name 'ethers.BrowserProvider'(TJsonRpcApiProvider)
   public
-    constructor new(const ethereum: JSValue);
+    constructor New(const ethereum: JSValue);
   end;
   TBrowserProviderClass = class of TBrowserProvider;
 
-  TJsonRpcProvider = class external name 'JsonRpcProvider'(TJsonRpcApiProvider)
+  TJsonRpcProvider = class external name 'ethers.JsonRpcProvider'(TJsonRpcApiProvider)
   end;
 
 implementation

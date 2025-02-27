@@ -16,8 +16,8 @@ type
 
   TWei = TBigInt;
 
-  TNetwork = class external name 'Network'(TJSObject)
-  private
+  TNetwork = class external name 'ethers.Network'(TJSObject)
+  strict private
     FChainId: TBigInt; external name 'chainId';
     FName: string; external name 'name';
   public
@@ -25,21 +25,28 @@ type
     property Name: string read FName;
   end;
 
-  TFeeData = class external name 'FeeData'(TJSObject)
-  private
-    FGasPrice: TBigInt; external name 'gasPrice';
-    FMaxFeePerGas: TBigInt; external name 'maxFeePerGas';
-    FMaxPriorityFeePerGas: TBigInt; external name 'maxPriorityFeePerGas';
+  TFeeData = class external name 'ethers.FeeData'(TJSObject)
+  strict private
+    FGasPrice: TWei; external name 'gasPrice';
+    FMaxFeePerGas: TWei; external name 'maxFeePerGas';
+    FMaxPriorityFeePerGas: TWei; external name 'maxPriorityFeePerGas';
   public
-    property GasPrice: TBigInt read FGasPrice;
-    property MaxFeePerGas: TBigInt read FMaxFeePerGas;
-    property MaxPriorityFeePerGas: TBigInt read FMaxPriorityFeePerGas;
+    property GasPrice: TWei read FGasPrice;
+    property MaxFeePerGas: TWei read FMaxFeePerGas;
+    property MaxPriorityFeePerGas: TWei read FMaxPriorityFeePerGas;
   end;
+
+function BigInt(const value: UInt8): TBigInt;
 
 function WeiToHex(const value: TWei): string;
 function HexToWei(const value: string): TWei;
 
 implementation
+
+function BigInt(const value: UInt8): TBigInt;
+asm
+  return BigInt(value);
+end;
 
 function WeiToHex(const value: TWei): string;
 begin
