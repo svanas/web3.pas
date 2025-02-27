@@ -90,6 +90,33 @@ console.log(Ethers.FormatEther(balance));
 console.log(await(UInt64, provider.GetTransactionCount('vitalk.eth')));
 ```
 
+### Sending Transactions
+
+To write to the blockchain you require access to a private key. In most cases, those private keys are not accessible directly to your code, and instead you make requests via a [Signer](https://docs.ethers.org/v6/api/providers/#Signer), which dispatches the request to a service (such as [MetaMask](https://metamask.io/)) which provides strictly gated access and requires feedback to the user to approve or reject operations:
+
+```delphi
+var
+  provider: TJsonRpcApiProvider;
+  signer: TJsonRpcSigner;
+begin
+  signer := nil;
+  if Assigned(Ethereum) then
+  begin
+    // Connect to the MetaMask EIP-1193 object. This is a standard protocol that
+    // allows Ethers access to make all read-only requests through MetaMask.
+    provider := Ethers.BrowserProvider.New(Ethereum);
+    // It also provides an opportunity to request access to write operations, which
+    // will be performed by the private key that MetaMask manages for the user.
+    signer := await(TJsonRpcSigner, provider.GetSigner);
+  end else
+    // If MetaMask is not installed, we use the default provider, which is backed
+    // by a variety of third-party services (such as Infura).
+    // They do not have private keys installed, so they only have read-only access.
+    provider := Ethers.GetDefaultProvider;
+  ...
+end;
+```
+
 ### Learn more
 
 This is a very short introduction, but covers many of the most common operations that developers require and provides a starting point for those newer to Ethereum: https://docs.ethers.org/v6/getting-started/
