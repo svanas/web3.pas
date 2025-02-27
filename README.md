@@ -40,7 +40,7 @@ In your Delphi unit, add the following to your uses clause:
 
 ```delphi
 uses
-  web3, web3.blocks, web3.classes, web3.provider, web3.signer, web3.transaction, web3.utils;
+  web3, web3.blocks, web3.misc, web3.provider, web3.signer, web3.transaction, web3.utils;
 ```
 
 You are now ready to call into a global singleton named `Ethers`:
