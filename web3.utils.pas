@@ -3,7 +3,7 @@ unit web3.utils;
 interface
 
 uses
-  web3;
+  web3.classes;
 
 type
   TDenomination = (
@@ -36,6 +36,9 @@ function ToWei(const value: string; const from: TDenomination): TWei;  // conver
 function FromWei(const value: TWei; const &to: TDenomination): string; // convert wei to string
 
 implementation
+
+uses
+  web3;
 
 const
   Decimals: array[TDenomination] of Byte = (
