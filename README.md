@@ -10,7 +10,7 @@ Ethers.js is included with pas2web3 and as such you don’t need to download and
 
 Last but not least, you need a browser-based crypto wallet. Please follow the below steps to install MetaMask into your web browser.
 
-### Installation
+## Installation
 
 1. Clone this repo to a directory of your choosing, for example `C:\Projects\pas2web3`
 2. Start Delphi. Click on: _Tools > Options > Language > Delphi > Library_
@@ -25,7 +25,7 @@ Last but not least, you need a browser-based crypto wallet. Please follow the be
 
 Please note you will need to repeat steps 5 and 6 every time you start a new TMS Web Core project.
 
-### Configuration
+## Configuration
 
 Before you can use pas2web3 in your TMS Web Core project, you will need to manually add the following snippet to the `<head>` section of your project's HTML document:
 
@@ -40,7 +40,7 @@ In your Delphi unit, add the following to your uses clause:
 
 ```delphi
 uses
-  web3, web3.classes, web3.provider, web3.signer, web3.utils;
+  web3, web3.blocks, web3.classes, web3.provider, web3.signer, web3.transaction, web3.utils;
 ```
 
 You are now ready to call into a global singleton named `Ethers`:
@@ -54,7 +54,7 @@ begin
 end;
 ```
 
-### Connecting to Ethereum
+## Connecting to Ethereum
 
 The very first thing needed to begin interacting with the blockchain is connecting to it using a [Provider](https://docs.ethers.org/v6/api/providers/#Provider):
 
@@ -63,8 +63,12 @@ var
   provider: TJsonRpcApiProvider;
 begin
   if not Assigned(Ethereum) then
+    // If MetaMask is not installed, we use the default provider, which is backed
+    // by a variety of third-party services (such as Infura).
     provider := Ethers.GetDefaultProvider
   else
+    // Connect to the MetaMask EIP-1193 object. This is a standard protocol that
+    // allows Ethers access to make all read-only requests through MetaMask.
     provider := Ethers.BrowserProvider.New(Ethereum);
   ...
 end;
@@ -72,7 +76,7 @@ end;
 
 The above snippet will give you read-only access to the blockchain. When requesting write access to the blockchain - such as sending a transaction - MetaMask will show a pop-up to the user asking for permission.
 
-### Interacting with the Blockchain
+## Interacting with the Blockchain
 
 Once you have a [Provider](https://docs.ethers.org/v6/api/providers/#Provider), you have a read-only connection to the data on the blockchain. This can be used to query the current account state, fetch historic logs, look up contract code and so on.
 
@@ -87,9 +91,44 @@ balance := await(TWei, provider.GetBalance('vitalik.eth'));
 console.log(Ethers.FormatEther(balance));
 
 // Get the next nonce required to send a transaction
-console.log(await(UInt64, provider.GetTransactionCount('vitalk.eth')));
+console.log(await(UInt64, provider.GetTransactionCount('vitalik.eth')));
 ```
 
-### Learn more
+## Sending Transactions
 
-This is a very short introduction, but covers many of the most common operations that developers require and provides a starting point for those newer to Ethereum: https://docs.ethers.org/v6/getting-started/
+To write to the blockchain you require access to a private key. In most cases, those private keys are not accessible directly to your code, and instead you make requests via a [Signer](https://docs.ethers.org/v6/api/providers/#Signer), which dispatches the request to a service (such as [MetaMask](https://metamask.io/)) which provides strictly gated access and requires feedback to the user to approve or reject operations:
+
+```delphi
+var
+  provider: TJsonRpcApiProvider;
+  signer: TJsonRpcSigner;
+begin
+  signer := nil;
+  if Assigned(Ethereum) then
+  begin
+    // Connect to the MetaMask EIP-1193 object. This is a standard protocol that
+    // allows Ethers access to make all read-only requests through MetaMask.
+    provider := Ethers.BrowserProvider.New(Ethereum);
+    // It also provides an opportunity to request access to write operations, which
+    // will be performed by the private key that MetaMask manages for the user.
+    signer := await(TJsonRpcSigner, provider.GetSigner);
+  end else
+    // If MetaMask is not installed, we use the default provider, which is backed
+    // by a variety of third-party services (such as Infura).
+    // They do not have private keys installed, so they only have read-only access.
+    provider := Ethers.GetDefaultProvider;
+  ...
+end;
+```
+
+## Learn more
+
+The [ethers.js documentation](https://docs.ethers.org/v6/) covers many of the most common operations that developers require.
+
+## License
+
+Distributed under the [GPL-3.0](https://github.com/svanas/pas2web3/blob/master/LICENSE) license.
+
+## Commercial support and training
+
+Commercial support and training is available from [Stefan](https://devstory.fyi/svanas).
