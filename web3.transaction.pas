@@ -8,7 +8,7 @@ uses
   // pas2js
   JS,
   // web3
-  web3.classes, web3.blocks;
+  web3.blocks, web3.misc;
 
 type
   TSignature = class external name 'ethers.Signature'(TJSObject)

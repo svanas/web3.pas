@@ -3,7 +3,7 @@ unit web3.utils;
 interface
 
 uses
-  web3.classes;
+  web3.misc;
 
 type
   TDenomination = (

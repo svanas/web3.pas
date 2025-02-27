@@ -8,7 +8,7 @@ uses
   // pas2js
   JS,
   // web3
-  web3.classes;
+  web3.misc;
 
 type
   // TBlock represents the data associated with a full block on Ethereum.

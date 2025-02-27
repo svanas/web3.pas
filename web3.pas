@@ -8,7 +8,7 @@ uses
   // pas2js
   JS,
   // web3
-  web3.classes, web3.provider;
+  web3.misc, web3.provider;
 
 type
   TEthers = class external name 'ethers'(TJSObject)
