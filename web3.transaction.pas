@@ -8,13 +8,13 @@ uses
   // pas2js
   JS,
   // web3
-  web3.classes;
+  web3.classes, web3.blocks;
 
 type
   TSignature = class external name 'ethers.Signature'(TJSObject)
   end;
 
-  // A Transaction describes an operation to be executed on Ethereum by an Externally Owned Account (EOA).
+  // TTransaction describes an operation to be executed on Ethereum by an Externally Owned Account (EOA).
   // It includes who (the "to" address), what (the "data") and how much (the "value" in ether) the operation should entail.
   TTransaction = class external name 'ethers.Transaction'(TJSObject)
   strict private
@@ -39,15 +39,15 @@ type
   public
     // Create a copy of this transaction.
     function Clone: TTransaction; external name 'clone';
-    // Returns true if this transaction is a legacy transaction (i.e. "type === 0")
+    // Returns True if this transaction is a legacy transaction (i.e. "type === 0")
     function IsLegacy: Boolean; external name 'isLegacy';
-    // Returns true if this transaction is berlin hardform transaction (i.e. "type === 1").
+    // Returns True if this transaction is berlin hardform transaction (i.e. "type === 1")
     function IsBerlin: Boolean; external name 'isBerlin';
-    // Returns true if this transaction is london hardform transaction (i.e. "type === 2").
+    // Returns True if this transaction is london hardform transaction (i.e. "type === 2")
     function IsLondon: Boolean; external name 'isLondon';
-    // Returns true if this transaction is an EIP-4844 transaction.
+    // Returns True if this transaction is an EIP-4844 transaction.
     function IsCancun: Boolean; external name 'isCancun';
-    // Returns true if signed.
+    // Returns True if signed.
     function IsSigned: Boolean; external name 'isSigned';
     // Return the most "likely" type; currently the highest supported transaction type.
     function InferType: UInt8; external name 'inferType';
@@ -57,7 +57,7 @@ type
     property &Type: UInt8 read FType write FType;
     // The name of the transaction type.
     property TypeName: string read FTypeName;
-    // The "to" address for the transaction
+    // The "to" address for the transaction.
     property &To: string read FTo write FTo;
     // The transaction nonce.
     property Nonce: UInt64 read FNonce write FNonce;
@@ -91,7 +91,83 @@ type
     property UnsignedSerialized: string read FUnsignedSerialized;
   end;
 
+  TTransactionReceipt = class external name 'ethers.TransactionReceipt'(TJSObject)
+  end;
+
+  // TTransactionResponse includes all properties about a transaction that was sent to the network, which may or may not be included in a block.
   TTransactionResponse = class external name 'ethers.TransactionResponse'(TJSObject)
+  strict private
+    FBlockHash           : string;     external name 'blockHash';
+    FBlockNumber         : UInt64;     external name 'blockNumber';
+    FChainId             : TBigInt;    external name 'chainId';
+    FData                : string;     external name 'data';
+    FFrom                : string;     external name 'from';
+    FGasLimit            : TBigInt;    external name 'gasLimit';
+    FGasPrice            : TWei;       external name 'gasPrice';
+    FHash                : string;     external name 'hash';
+    FIndex               : UInt64;     external name 'index';
+    FMaxFeePerGas        : TWei;       external name 'maxFeePerGas';
+    FMaxPriorityFeePerGas: TWei;       external name 'maxPriorityFeePerGas';
+    FNonce               : UInt64;     external name 'nonce';
+    FSignature           : TSignature; external name 'signature';
+    FTo                  : string;     external name 'to';
+    FType                : UInt8;      external name 'type';
+    FValue               : TWei;       external name 'value';
+  public
+    // Resolves to the number of confirmations this transaction has.
+    function Confirmations: UInt64; async; external name 'confirmations';
+    // Resolves to the block that this transaction was included in. This will return null if the transaction has not been included yet.
+    function GetBlock: TBlock; async; external name 'getBlock';
+    // Resolves to this transaction being re-requested from the provider.
+    // This can be used if you have an unmined transaction and wish to get an up-to-date populated instance.
+    function GetTransaction: TTransactionResponse; async; external name 'getTransaction';
+    // Returns True if the transaction is a Berlin (i.e. type == 1) transaction.
+    function IsBerlin: Boolean; external name 'isBerlin';
+    // Returns True if the transaction is a Cancun (i.e. type == 3) transaction.
+    function IsCancun: Boolean; external name 'isCancun';
+    // Returns True if the transaction is a legacy (i.e. type == 0) transaction.
+    function IsLegacy: Boolean; external name 'isLegacy';
+    // Returns True if the transaction is a London (i.e. type == 2) transaction.
+    function IsLondon: Boolean; external name 'isLondon';
+    // Returns True if this transaction has been included with a block. This is effective only as of the time the TTransactionResponse was instantiated.
+    function IsMined: Boolean; external name 'isMined';
+    // Resolves once this transaction has been mined.
+    function Wait: TTransactionReceipt; async; external name 'wait';
+    // The blockHash of the block that this transaction was included in. This is "null" for pending transactions.
+    property BlockHash: string read FBlockHash;
+    // The block number of the block that this transaction was included in. This is "null" for pending transactions.
+    property BlockNumber: UInt64 read FBlockNumber;
+    // The chain ID, see: chainlist.org
+    property ChainId: TBigInt read FChainId;
+    // The transaction data.
+    property Data: string read FData;
+    // The sender of this transaction.
+    property From: string read FFrom;
+    // The maximum units of gas this transaction can consume. If execution exceeds this, the transaction is reverted and the sender is charged for the full amount, despite no state changes being made.
+    property GasLimit: TBigInt read FGasLimit;
+    // The gas price can have various values, depending on the network.
+    // In modern networks, for transactions that are included this is the effective gas price (the fee per gas that was actually charged), while for transactions that have not been included yet is the maxFeePerGas.
+    // For legacy transactions, or transactions on legacy networks, this is the fee that will be charged per unit of gas the transaction consumes.
+    property GasPrice: TWei read FGasPrice;
+    // The transaction hash.
+    property Hash: string read FHash;
+    // The index within the block that this transaction resides at.
+    property Index: UInt64 read FIndex;
+    // The maximum fee (per unit of gas) to allow this transaction to charge the sender.
+    property MaxFeePerGas: TWei read FMaxFeePerGas;
+    // The maximum priority fee (per unit of gas) to allow a validator to charge the sender.
+    property MaxPriorityFeePerGas: TWei read FMaxPriorityFeePerGas;
+    // The nonce, which is used to prevent replay attacks and offer a method to ensure transactions from a given sender are explicitly ordered.
+    // When sending a transaction, this must be equal to the number of transactions ever sent by the sender.
+    property Nonce: UInt64 read FNonce;
+    // The signature for this transaction.
+    property Signature: TSignature read FSignature;
+    // The receiver of this transaction.
+    property &To: string read FTo;
+    // The EIP-2718 transaction envelope type. This is 0 for legacy transactions types.
+    property &Type: UInt8 read FType;
+    // The value of this transaction in wei.
+    property Value: TWei read FValue;
   end;
 
 function Transaction(const chainId: TBigInt; const &to: string; const value: TWei; const data: string = '0x'): TTransaction;
