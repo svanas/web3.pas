@@ -36,7 +36,14 @@ Before you can use pas2web3 in your TMS Web Core project, you will need to manua
 </script>
 ```
 
-Assuming you have added `web3` to your uses clause, here is how to call into a global singleton named `Ethers`:
+In your Delphi unit, add the following to your uses clause:
+
+```delphi
+uses
+  web3, web3.classes, web3.provider, web3.signer, web3.utils;
+```
+
+You are now ready to call into a global singleton named `Ethers`:
 
 ```delphi
 var
