@@ -16,12 +16,15 @@ type
     FBrowserProvider: TBrowserProviderClass; external name 'BrowserProvider';
     FVersion: string; external name 'version';
   public
-    function ParseEther(const ether: string): TWei; external name 'parseEther';
-    function FormatEther(const wei: TWei): string; external name 'formatEther';
+    function ParseEther(const ether: string): TWei; external name 'parseEther'; // Converts the decimal string to TWei
+    function FormatEther(const wei: TWei): string; external name 'formatEther'; // Converts TWei into a decimal string
+
     function ParseUnits(const value: string; const decimals: UInt8): TWei; external name 'parseUnits';
     function FormatUnits(const value: TWei; const decimals: UInt8): string; external name 'formatUnits';
+
     function GetDefaultProvider: TJsonRpcProvider; external name 'getDefaultProvider';
     property BrowserProvider: TBrowserProviderClass read FBrowserProvider;
+
     property Version: string read FVersion;
   end;
 
