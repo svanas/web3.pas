@@ -18,130 +18,82 @@ type
   // It includes who (the "to" address), what (the "data") and how much (the "value" in ether) the operation should entail.
   TTransaction = class external name 'ethers.Transaction'(TJSObject)
   strict private
-    FType                : UInt8;      external name 'type';
-    FTypeName            : string;     external name 'typeName';
-    FTo                  : string;     external name 'to';
-    FNonce               : UInt64;     external name 'nonce';
-    FGasLimit            : TBigInt;    external name 'gasLimit';
-    FGasPrice            : TWei;       external name 'gasPrice';
-    FMaxPriorityFeePerGas: TWei;       external name 'maxPriorityFeePerGas';
-    FMaxFeePerGas        : TWei;       external name 'maxFeePerGas';
-    FData                : string;     external name 'data';
-    FValue               : TWei;       external name 'value';
     FChainId             : TBigInt;    external name 'chainId';
-    FSignature           : TSignature; external name 'signature';
-    FHash                : string;     external name 'hash';
-    FUnsignedHash        : string;     external name 'unsignedHash';
+    FData                : string;     external name 'data';
     FFrom                : string;     external name 'from';
     FFromPublicKey       : string;     external name 'fromPublicKey';
+    FGasLimit            : TBigInt;    external name 'gasLimit';
+    FGasPrice            : TWei;       external name 'gasPrice';
+    FHash                : string;     external name 'hash';
+    FMaxFeePerGas        : TWei;       external name 'maxFeePerGas';
+    FMaxPriorityFeePerGas: TWei;       external name 'maxPriorityFeePerGas';
+    FNonce               : UInt64;     external name 'nonce';
     FSerialized          : string;     external name 'serialized';
+    FSignature           : TSignature; external name 'signature';
+    FTo                  : string;     external name 'to';
+    FType                : UInt8;      external name 'type';
+    FTypeName            : string;     external name 'typeName';
+    FUnsignedHash        : string;     external name 'unsignedHash';
     FUnsignedSerialized  : string;     external name 'unsignedSerialized';
+    FValue               : TWei;       external name 'value';
   public
+    {-------------------------------- methods ---------------------------------}
     // Create a copy of this transaction.
     function Clone: TTransaction; external name 'clone';
-    // Returns True if this transaction is a legacy transaction (i.e. "type === 0")
-    function IsLegacy: Boolean; external name 'isLegacy';
-    // Returns True if this transaction is berlin hardform transaction (i.e. "type === 1")
-    function IsBerlin: Boolean; external name 'isBerlin';
-    // Returns True if this transaction is london hardform transaction (i.e. "type === 2")
-    function IsLondon: Boolean; external name 'isLondon';
-    // Returns True if this transaction is an EIP-4844 transaction.
-    function IsCancun: Boolean; external name 'isCancun';
-    // Returns True if signed.
-    function IsSigned: Boolean; external name 'isSigned';
     // Return the most "likely" type; currently the highest supported transaction type.
     function InferType: UInt8; external name 'inferType';
     // Validates the explicit properties and returns a list of compatible transaction types.
     function InferTypes: TArray<UInt8>; external name 'inferTypes';
-    // The transaction type. If null, the type will be automatically inferred based on explicit properties.
-    property &Type: UInt8 read FType write FType;
-    // The name of the transaction type.
-    property TypeName: string read FTypeName;
-    // The "to" address for the transaction.
-    property &To: string read FTo write FTo;
-    // The transaction nonce.
-    property Nonce: UInt64 read FNonce write FNonce;
-     // The gas limit.
-    property GasLimit: TBigInt read FGasLimit write FGasLimit;
-    // The gas price. On legacy networks this defines the fee that will be paid. On EIP-1559 networks, this should be "null".
-    property GasPrice: TWei read FGasPrice write FGasPrice;
-    // The maximum priority fee per unit of gas to pay. On legacy networks this should be "null".
-    property MaxPriorityFeePerGas: TWei read FMaxPriorityFeePerGas write FMaxPriorityFeePerGas;
-    // The maximum total fee per unit of gas to pay. On legacy networks this should be "null".
-    property MaxFeePerGas: TWei read FMaxFeePerGas write FMaxFeePerGas;
-    // The transaction data.
-    property Data: string read FData write FData;
-    // The amount of ether (in wei) to send in this transactions.
-    property Value: TWei read FValue write FValue;
+    // Returns True if this transaction is berlin hardform transaction (i.e. "type === 1")
+    function IsBerlin: Boolean; external name 'isBerlin';
+    // Returns True if this transaction is an EIP-4844 transaction.
+    function IsCancun: Boolean; external name 'isCancun';
+    // Returns True if this transaction is a legacy transaction (i.e. "type === 0")
+    function IsLegacy: Boolean; external name 'isLegacy';
+    // Returns True if this transaction is london hardform transaction (i.e. "type === 2")
+    function IsLondon: Boolean; external name 'isLondon';
+    // Returns True if signed.
+    function IsSigned: Boolean; external name 'isSigned';
+    {------------------------------- properties -------------------------------}
     // The chain ID this transaction is valid on.
     property ChainId: TBigInt read FChainId write FChainId;
-    // If signed, the signature for this transaction.
-    property Signature: TSignature read FSignature write FSignature;
-    // The transaction hash, if signed. Otherwise "null".
-    property Hash: string read FHash;
-    // The pre-image hash of this transaction. This is the digest that a Signer must sign to authorize this transaction.
-    property UnsignedHash: string read FUnsignedHash;
+    // The transaction data.
+    property Data: string read FData write FData;
     // The sending address, if signed. Otherwise "null".
     property From: string read FFrom;
     // The public key of the sender, if signed. Otherwise "null".
     property FromPublicKey: string read FFromPublicKey;
+     // The gas limit.
+    property GasLimit: TBigInt read FGasLimit write FGasLimit;
+    // The gas price. On legacy networks this defines the fee that will be paid. On EIP-1559 networks, this should be "null".
+    property GasPrice: TWei read FGasPrice write FGasPrice;
+    // The transaction hash, if signed. Otherwise "null".
+    property Hash: string read FHash;
+    // The maximum total fee per unit of gas to pay. On legacy networks this should be "null".
+    property MaxFeePerGas: TWei read FMaxFeePerGas write FMaxFeePerGas;
+    // The maximum priority fee per unit of gas to pay. On legacy networks this should be "null".
+    property MaxPriorityFeePerGas: TWei read FMaxPriorityFeePerGas write FMaxPriorityFeePerGas;
+    // The transaction nonce.
+    property Nonce: UInt64 read FNonce write FNonce;
     // The serialized transaction. This throws if the transaction is unsigned.
     property Serialized: string read FSerialized;
+    // If signed, the signature for this transaction.
+    property Signature: TSignature read FSignature write FSignature;
+    // The "to" address for the transaction.
+    property &To: string read FTo write FTo;
+    // The transaction type. If null, the type will be automatically inferred based on explicit properties.
+    property &Type: UInt8 read FType write FType;
+    // The name of the transaction type.
+    property TypeName: string read FTypeName;
+    // The pre-image hash of this transaction. This is the digest that a Signer must sign to authorize this transaction.
+    property UnsignedHash: string read FUnsignedHash;
     // The transaction pre-image. The hash of this is the digest which needs to be signed to authorize this transaction.
     property UnsignedSerialized: string read FUnsignedSerialized;
+    // The amount of ether (in wei) to send in this transactions.
+    property Value: TWei read FValue write FValue;
   end;
 
-  // TTransactionReceipt includes additional information about a transaction that is only available after it has been mined.
-  TTransactionReceipt = class external name 'ethers.TransactionReceipt'(TJSObject)
-  strict private
-    FBlockHash        : string;  external name 'blockHash';
-    FBlockNumber      : UInt64;  external name 'blockNumber';
-    FContractAddress  : string;  external name 'contractAddress';
-    FCumulativeGasUsed: TBigInt; external name 'cumulativeGasUsed';
-    FFee              : TWei;    external name 'fee';
-    FFrom             : string;  external name 'from';
-    FGasPrice         : TWei;    external name 'gasPrice';
-    FGasUsed          : TBigInt; external name 'gasUsed';
-    FHash             : string;  external name 'hash';
-    FIndex            : UInt64;  external name 'index';
-    FStatus           : UInt8;   external name 'status';
-    FTo               : string;  external name 'to';
-    FType             : UInt8;   external name 'type';
-  public
-    // Resolves to the number of confirmations this transaction has.
-    function Confirmations: UInt64; async; external name 'confirmations';
-    // Resolves to the block this transaction occurred in.
-    function GetBlock: TBlock; async; external name 'getBlock';
-    // Resolves to the transaction this transaction occurred in.
-    function GetTransaction: TTransactionResponse; async; external name 'getTransaction';
-    // The block hash of the block this transaction was included in.
-    property BlockHash: string read FBlockHash;
-    // The block number of the block this transaction was included in.
-    property BlockNumber: UInt64 read FBlockNumber;
-    // The address of the contract if the transaction was directly responsible for deploying one.
-    property ContractAddress: string read FContractAddress;
-    // The amount of gas used by all transactions within the block for this and all transactions with a lower index.
-    property CumulativeGasUsed: TBigInt read FCumulativeGasUsed;
-    // The total fee for this transaction, in wei.
-    property Fee: TWei read FFee;
-    // The sender of the transaction.
-    property From: string read FFrom;
-    // The actual gas price used during execution.
-    // Due to the complexity of EIP-1559 this value can only be calculated after the transaction has been mined, since the base fee is protocol-enforced.
-    property GasPrice: TWei read FGasPrice;
-    // The actual amount of gas used by this transaction.
-    property GasUsed: TBigInt read FGasUsed;
-    // The transaction hash.
-    property Hash: string read FHash;
-    // The index of this transaction within the block.
-    property Index: UInt64 read FIndex;
-    // The status of this transaction, indicating success (i.e. 1) or a revert (i.e. 0)
-    property Status: UInt8 read FStatus;
-    // The address the transaction was sent to.
-    property &To: string read FTo;
-    // The EIP-2718 transaction type.
-    property &Type: UInt8 read FType;
-  end;
+  TTransactionReceipt = class; // forward declaration
 
   // TTransactionResponse includes all properties about a transaction that was sent to the network, which may or may not be included in a block.
   TTransactionResponse = class external name 'ethers.TransactionResponse'(TJSObject)
@@ -163,6 +115,7 @@ type
     FType                : UInt8;      external name 'type';
     FValue               : TWei;       external name 'value';
   public
+    {-------------------------------- methods ---------------------------------}
     // Resolves to the number of confirmations this transaction has.
     function Confirmations: UInt64; async; external name 'confirmations';
     // Resolves to the block that this transaction was included in. This will return null if the transaction has not been included yet.
@@ -182,6 +135,7 @@ type
     function IsMined: Boolean; external name 'isMined';
     // Resolves once this transaction has been mined.
     function Wait: TTransactionReceipt; async; external name 'wait';
+    {------------------------------- properties -------------------------------}
     // The blockHash of the block that this transaction was included in. This is "null" for pending transactions.
     property BlockHash: string read FBlockHash;
     // The block number of the block that this transaction was included in. This is "null" for pending transactions.
@@ -217,6 +171,60 @@ type
     property &Type: UInt8 read FType;
     // The value of this transaction in wei.
     property Value: TWei read FValue;
+  end;
+
+  // TTransactionReceipt includes additional information about a transaction that is only available after it has been mined.
+  TTransactionReceipt = class external name 'ethers.TransactionReceipt'(TJSObject)
+  strict private
+    FBlockHash        : string;  external name 'blockHash';
+    FBlockNumber      : UInt64;  external name 'blockNumber';
+    FContractAddress  : string;  external name 'contractAddress';
+    FCumulativeGasUsed: TBigInt; external name 'cumulativeGasUsed';
+    FFee              : TWei;    external name 'fee';
+    FFrom             : string;  external name 'from';
+    FGasPrice         : TWei;    external name 'gasPrice';
+    FGasUsed          : TBigInt; external name 'gasUsed';
+    FHash             : string;  external name 'hash';
+    FIndex            : UInt64;  external name 'index';
+    FStatus           : UInt8;   external name 'status';
+    FTo               : string;  external name 'to';
+    FType             : UInt8;   external name 'type';
+  public
+    {-------------------------------- methods ---------------------------------}
+    // Resolves to the number of confirmations this transaction has.
+    function Confirmations: UInt64; async; external name 'confirmations';
+    // Resolves to the block this transaction occurred in.
+    function GetBlock: TBlock; async; external name 'getBlock';
+    // Resolves to the transaction this transaction occurred in.
+    function GetTransaction: TTransactionResponse; async; external name 'getTransaction';
+    {------------------------------- properties -------------------------------}
+    // The block hash of the block this transaction was included in.
+    property BlockHash: string read FBlockHash;
+    // The block number of the block this transaction was included in.
+    property BlockNumber: UInt64 read FBlockNumber;
+    // The address of the contract if the transaction was directly responsible for deploying one.
+    property ContractAddress: string read FContractAddress;
+    // The amount of gas used by all transactions within the block for this and all transactions with a lower index.
+    property CumulativeGasUsed: TBigInt read FCumulativeGasUsed;
+    // The total fee for this transaction, in wei.
+    property Fee: TWei read FFee;
+    // The sender of the transaction.
+    property From: string read FFrom;
+    // The actual gas price used during execution.
+    // Due to the complexity of EIP-1559 this value can only be calculated after the transaction has been mined, since the base fee is protocol-enforced.
+    property GasPrice: TWei read FGasPrice;
+    // The actual amount of gas used by this transaction.
+    property GasUsed: TBigInt read FGasUsed;
+    // The transaction hash.
+    property Hash: string read FHash;
+    // The index of this transaction within the block.
+    property Index: UInt64 read FIndex;
+    // The status of this transaction, indicating success (i.e. 1) or a revert (i.e. 0)
+    property Status: UInt8 read FStatus;
+    // The address the transaction was sent to.
+    property &To: string read FTo;
+    // The EIP-2718 transaction type.
+    property &Type: UInt8 read FType;
   end;
 
 function Transaction(const chainId: TBigInt; const &to: string; const value: TWei; const data: string = '0x'): TTransaction;
