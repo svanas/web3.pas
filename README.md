@@ -31,7 +31,7 @@ Before you can use pas2web3 in your TMS Web Core project, you will need to manua
 
 ```html
 <script type="module">
-  import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js";
+  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.min.js";
   window.ethers = ethers;
 </script>
 ```
