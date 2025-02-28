@@ -125,20 +125,21 @@ Once you have a [Signer](https://docs.ethers.org/v6/api/providers/#Signer), you 
 
 ```delphi
 var
-  tx      : TTransaction;
+  tx      : TJSObject;
   response: TTransactionResponse;
   receipt : TTransactionReceipt;  
 begin
   // When sending a transaction, the value is in wei, so ParseEther converts ether to wei.
   tx := Transaction(
-    BigInt(1),                                    // Ethereum mainnet, see: chainlist.org
     '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // To: vitalik.eth
     Ethers.ParseEther('1.0')                      // Value
   );
   // Send tx to the network
   response := await(TTransactionResponse, signer.SendTransaction(tx));
+  console.log(response.Hash); // the transaction hash
   // Often you may wish to wait until the transaction is mined
   receipt := await(TTransactionReceipt, response.Wait);
+  console.log(receipt.Status); // 1 for success, 0 for failure
   ...
 end;
 ```
