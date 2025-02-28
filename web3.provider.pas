@@ -41,8 +41,9 @@ type
     function WaitForTransaction(const hash: string): TTransactionReceipt; async; external name 'waitForTransaction';
   end;
 
-  TJsonRpcApiProvider = class abstract external name 'ethers.JsonRpcApiProvider'(TAbstractProvider)
+  TJsonRpcApiProvider = class external name 'ethers.JsonRpcApiProvider'(TAbstractProvider)
   public
+    // Resolves the signer managed by MetaMask
     function GetSigner: TJsonRpcSigner; async; external name 'getSigner';
   end;
 
@@ -52,8 +53,7 @@ type
   end;
   TBrowserProviderClass = class of TBrowserProvider;
 
-  TJsonRpcProvider = class external name 'ethers.JsonRpcProvider'(TJsonRpcApiProvider)
-  end;
+  TJsonRpcProvider = class external name 'ethers.JsonRpcProvider'(TJsonRpcApiProvider);
 
 implementation
 

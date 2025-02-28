@@ -16,15 +16,19 @@ type
     FBrowserProvider: TBrowserProviderClass; external name 'BrowserProvider';
     FVersion: string; external name 'version';
   public
-    function ParseEther(const ether: string): TWei; external name 'parseEther'; // Converts the decimal string to TWei
-    function FormatEther(const wei: TWei): string; external name 'formatEther'; // Converts TWei into a decimal string
-
+    // Returns True if value is a valid address.
+    function IsAddress(const value: string): Boolean; external name 'isAddress';
+    // Convert ether (string) to TWei & convert TWei into ether (string)
+    function ParseEther(const ether: string): TWei; external name 'parseEther';
+    function FormatEther(const wei: TWei): string; external name 'formatEther';
+    // Convert decimal string to TWei & convert TWei into a decimal string
     function ParseUnits(const value: string; const decimals: UInt8): TWei; external name 'parseUnits';
     function FormatUnits(const value: TWei; const decimals: UInt8): string; external name 'formatUnits';
-
+    // The default provider, which is backed by a variety of third-party services (such as Infura, for example)
     function GetDefaultProvider: TJsonRpcProvider; external name 'getDefaultProvider';
+    // TBrowserProvider is intended to wrap an injected provider which adheres to the EIP-1193 standard
     property BrowserProvider: TBrowserProviderClass read FBrowserProvider;
-
+    // The current version of Ethers
     property Version: string read FVersion;
   end;
 

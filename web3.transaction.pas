@@ -11,87 +11,7 @@ uses
   web3.blocks, web3.misc;
 
 type
-  TSignature = class external name 'ethers.Signature'(TJSObject)
-  end;
-
-  // TTransaction describes an operation to be executed on Ethereum by an Externally Owned Account (EOA).
-  // It includes who (the "to" address), what (the "data") and how much (the "value" in ether) the operation should entail.
-  TTransaction = class external name 'ethers.Transaction'(TJSObject)
-  strict private
-    FChainId             : TBigInt;    external name 'chainId';
-    FData                : string;     external name 'data';
-    FFrom                : string;     external name 'from';
-    FFromPublicKey       : string;     external name 'fromPublicKey';
-    FGasLimit            : TBigInt;    external name 'gasLimit';
-    FGasPrice            : TWei;       external name 'gasPrice';
-    FHash                : string;     external name 'hash';
-    FMaxFeePerGas        : TWei;       external name 'maxFeePerGas';
-    FMaxPriorityFeePerGas: TWei;       external name 'maxPriorityFeePerGas';
-    FNonce               : UInt64;     external name 'nonce';
-    FSerialized          : string;     external name 'serialized';
-    FSignature           : TSignature; external name 'signature';
-    FTo                  : string;     external name 'to';
-    FType                : UInt8;      external name 'type';
-    FTypeName            : string;     external name 'typeName';
-    FUnsignedHash        : string;     external name 'unsignedHash';
-    FUnsignedSerialized  : string;     external name 'unsignedSerialized';
-    FValue               : TWei;       external name 'value';
-  public
-    {-------------------------------- methods ---------------------------------}
-    // Create a copy of this transaction.
-    function Clone: TTransaction; external name 'clone';
-    // Return the most "likely" type; currently the highest supported transaction type.
-    function InferType: UInt8; external name 'inferType';
-    // Validates the explicit properties and returns a list of compatible transaction types.
-    function InferTypes: TArray<UInt8>; external name 'inferTypes';
-    // Returns True if this transaction is berlin hardform transaction (i.e. "type === 1")
-    function IsBerlin: Boolean; external name 'isBerlin';
-    // Returns True if this transaction is an EIP-4844 transaction.
-    function IsCancun: Boolean; external name 'isCancun';
-    // Returns True if this transaction is a legacy transaction (i.e. "type === 0")
-    function IsLegacy: Boolean; external name 'isLegacy';
-    // Returns True if this transaction is london hardform transaction (i.e. "type === 2")
-    function IsLondon: Boolean; external name 'isLondon';
-    // Returns True if signed.
-    function IsSigned: Boolean; external name 'isSigned';
-    {------------------------------- properties -------------------------------}
-    // The chain ID this transaction is valid on.
-    property ChainId: TBigInt read FChainId write FChainId;
-    // The transaction data.
-    property Data: string read FData write FData;
-    // The sending address, if signed. Otherwise "null".
-    property From: string read FFrom;
-    // The public key of the sender, if signed. Otherwise "null".
-    property FromPublicKey: string read FFromPublicKey;
-     // The gas limit.
-    property GasLimit: TBigInt read FGasLimit write FGasLimit;
-    // The gas price. On legacy networks this defines the fee that will be paid. On EIP-1559 networks, this should be "null".
-    property GasPrice: TWei read FGasPrice write FGasPrice;
-    // The transaction hash, if signed. Otherwise "null".
-    property Hash: string read FHash;
-    // The maximum total fee per unit of gas to pay. On legacy networks this should be "null".
-    property MaxFeePerGas: TWei read FMaxFeePerGas write FMaxFeePerGas;
-    // The maximum priority fee per unit of gas to pay. On legacy networks this should be "null".
-    property MaxPriorityFeePerGas: TWei read FMaxPriorityFeePerGas write FMaxPriorityFeePerGas;
-    // The transaction nonce.
-    property Nonce: UInt64 read FNonce write FNonce;
-    // The serialized transaction. This throws if the transaction is unsigned.
-    property Serialized: string read FSerialized;
-    // If signed, the signature for this transaction.
-    property Signature: TSignature read FSignature write FSignature;
-    // The "to" address for the transaction.
-    property &To: string read FTo write FTo;
-    // The transaction type. If null, the type will be automatically inferred based on explicit properties.
-    property &Type: UInt8 read FType write FType;
-    // The name of the transaction type.
-    property TypeName: string read FTypeName;
-    // The pre-image hash of this transaction. This is the digest that a Signer must sign to authorize this transaction.
-    property UnsignedHash: string read FUnsignedHash;
-    // The transaction pre-image. The hash of this is the digest which needs to be signed to authorize this transaction.
-    property UnsignedSerialized: string read FUnsignedSerialized;
-    // The amount of ether (in wei) to send in this transactions.
-    property Value: TWei read FValue write FValue;
-  end;
+  TSignature = class external name 'ethers.Signature'(TJSObject);
 
   TTransactionReceipt = class; // forward declaration
 
@@ -227,17 +147,16 @@ type
     property &Type: UInt8 read FType;
   end;
 
-function Transaction(const chainId: TBigInt; const &to: string; const value: TWei; const data: string = '0x'): TTransaction;
+function Transaction(const &to: string; const value: TWei; const data: string = '0x'): TJSObject;
 
 implementation
 
-function Transaction(const chainId: TBigInt; const &to: string; const value: TWei; const data: string): TTransaction;
+function Transaction(const &to: string; const value: TWei; const data: string): TJSObject;
 begin
-  Result := TTransaction.New;
-  Result.ChainId := chainId;
-  Result.&To     := &to;
-  Result.Value   := value;
-  Result.Data    := data;
+  Result := TJSObject.New;
+  Result['to']    := &to;
+  Result['value'] := value;
+  Result['data']  := data;
 end;
 
 end.
