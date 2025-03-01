@@ -6,9 +6,7 @@ interface
 
 uses
   // pas2js
-  JS,
-  // web3
-  web3.blocks;
+  JS;
 
 type
   TSignature = class external name 'ethers.Signature'(TJSObject);
