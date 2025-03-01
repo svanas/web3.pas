@@ -19,7 +19,11 @@ uses
   // pas2js
   JS;
 
-type
+type // forward declarations
+  TBlock               = class;
+  TTransactionReceipt  = class;
+  TTransactionResponse = class;
+
   // Ether has various denominations just like any other currency. Wei is the smallest denomination.
   TDenomination = (
     wei,    // 1 ether = 1000000000000000000 wei
@@ -78,15 +82,18 @@ type
     property MaxPriorityFeePerGas: TWei read FMaxPriorityFeePerGas;
   end;
 
-  {--------------------------------- Provider ---------------------------------}
+  {------------------------------ TAbstractSigner -----------------------------}
+
+  TAbstractSigner = class abstract external name 'ethers.AbstractSigner'(TJSObject)
+  public
+    function SendTransaction(const tx: TJSObject): TTransactionResponse; async; external name 'sendTransaction';
+  end;
+
+  {--------------------------------- Providers --------------------------------}
 
   // TAbstractProvider provides a base class for other sub-classes to implement the Provider API
   TAbstractProvider = class abstract external name 'ethers.AbstractProvider'(TJSObject)
   public
-    // Simulate the execution of tx. If the call reverts, it will throw a CallExceptionError which includes the revert data.
-    function Call(const tx: TTransactionRequest): string; async; external name 'call';
-    // Estimates the amount of gas required to execute tx.
-    function EstimateGas(const tx: TTransactionRequest): TBigInt; async; external name 'estimateGas';
     // Get the account balance (in wei) of address.
     function GetBalance(const address: string): TWei; async; external name 'getBalance'; overload;
     // Get the account balance (in wei) of address. If the node supports archive access for the specified block, the balance is as of that block.
@@ -117,39 +124,37 @@ type
     function WaitForTransaction(const hash: string): TTransactionReceipt; async; external name 'waitForTransaction';
   end;
 
-  TJsonRpcApiProvider = class external name 'ethers.JsonRpcApiProvider'(TAbstractProvider)
+  TJsonRpcProvider = class external name 'ethers.JsonRpcApiProvider'(TAbstractProvider)
   public
     // Resolves the signer managed by MetaMask
-    function GetSigner: TJsonRpcSigner; async; external name 'getSigner';
+    function GetSigner: TAbstractSigner; async; external name 'getSigner';
   end;
 
-  TBrowserProvider = class external name 'ethers.BrowserProvider'(TJsonRpcApiProvider)
+  TBrowserProvider = class external name 'ethers.BrowserProvider'(TJsonRpcProvider)
   public
     constructor New(const ethereum: JSValue);
   end;
   TBrowserProviderClass = class of TBrowserProvider;
-
-  TJsonRpcProvider = class external name 'ethers.JsonRpcProvider'(TJsonRpcApiProvider);
 
   {---------------------------------- TBlock ----------------------------------}
 
   // TBlock represents the data associated with a full block on Ethereum.
   TBlock = class external name 'ethers.Block'(TJSObject)
   strict private
-    FBaseFeePerGas: TWei;                external name 'baseFeePerGas';
-    FDate         : TJSDate;             external name 'date';
-    FDifficulty   : TBigInt;             external name 'difficulty';
-    FExtraData    : string;              external name 'extraData';
-    FGasLimit     : TBigInt;             external name 'gasLimit';
-    FGasUsed      : TBigInt;             external name 'gasUsed';
-    FHash         : string;              external name 'hash';
-    FLength       : UInt64;              external name 'length';
-    FMiner        : string;              external name 'miner';
-    FNumber       : UInt64;              external name 'number';
-    FParentHash   : string;              external name 'parentHash';
-    FProvider     : TJsonRpcApiProvider; external name 'provider';
-    FTimestamp    : UInt64;              external name 'timestamp';
-    FTransactions : TArray<string>;      external name 'transactions';
+    FBaseFeePerGas: TWei;              external name 'baseFeePerGas';
+    FDate         : TJSDate;           external name 'date';
+    FDifficulty   : TBigInt;           external name 'difficulty';
+    FExtraData    : string;            external name 'extraData';
+    FGasLimit     : TBigInt;           external name 'gasLimit';
+    FGasUsed      : TBigInt;           external name 'gasUsed';
+    FHash         : string;            external name 'hash';
+    FLength       : UInt64;            external name 'length';
+    FMiner        : string;            external name 'miner';
+    FNumber       : UInt64;            external name 'number';
+    FParentHash   : string;            external name 'parentHash';
+    FProvider     : TAbstractProvider; external name 'provider';
+    FTimestamp    : UInt64;            external name 'timestamp';
+    FTransactions : TArray<string>;    external name 'transactions';
   public
     {-------------------------------- methods ---------------------------------}
     // Get the transaction at index (or hash) within this block.
@@ -185,26 +190,14 @@ type
     // The block hash of the parent block.
     property ParentHash: string read FParentHash;
     // The provider connected to the block used to fetch additional details if necessary.
-    property Provider: TJsonRpcApiProvider read FProvider;
+    property Provider: TAbstractProvider read FProvider;
     // The timestamp for this block, which is the number of seconds since epoch that this block was included.
     property Timestamp: UInt64 read FTimestamp;
     // Returns the list of transaction hashes, in the order they were executed within the block.
     property Transactions: TArray<string> read FTransactions;
   end;
 
-const
-  // To remember the differences between the block tags you can think of them in the order of oldest to newest block numbers: earliest < finalized < safe < latest < pending
-  BLOCK_EARLIEST  = 'earliest';  // The lowest numbered block the client has available. Intuitively, you can think of this as the first block created.
-  BLOCK_FINALIZED = 'finalized'; // The most recent crypto-economically secure block, that has been accepted by >2/3 of validators. Typically finalized in two epochs. Cannot be re-orged outside of manual intervention driven by community coordination. Intuitively, this block is very unlikely to be re-orged.
-  BLOCK_SAFE      = 'safe';      // The most recent crypto-economically secure block, cannot be re-orged outside of manual intervention driven by community coordination. Intuitively, this block is "unlikely" to be re-orged.
-  BLOCK_LATEST    = 'latest';    // The most recent block in the canonical chain observed by the client, this block may be re-orged out of the canonical chain even under healthy/normal conditions. Intuitively, this block is the most recent block observed by the client.
-  BLOCK_PENDING   = 'pending';   // A sample next block built by the client on top of latest and containing the set of transactions usually taken from local mempool. Intuitively, you can think of these as blocks that have not been mined yet.
-  // safe and finalized are new blog tags introduced after The Merge that define commitment levels for block finality. Unlike latest which increments one block at a time (ex 101, 102, 103), safe and finalized increment every "epoch" (32 blocks), which is every ~6 minutes assuming an average ~12 second block times.
-
   {---------------- TTransactionResponse & TTransactionReceipt ----------------}
-
-type
-  TTransactionReceipt = class; // forward declaration
 
   // ECDSA signature with its (r, s) properties. Supports DER & compact representations.
   TSignature = class external name 'ethers.Signature'(TJSObject);
@@ -212,23 +205,23 @@ type
   // TTransactionResponse includes all properties about a transaction that was sent to the network, which may or may not be included in a block.
   TTransactionResponse = class external name 'ethers.TransactionResponse'(TJSObject)
   strict private
-    FBlockHash           : string;             external name 'blockHash';
-    FBlockNumber         : UInt64;             external name 'blockNumber';
-    FChainId             : TBigInt;            external name 'chainId';
-    FData                : string;             external name 'data';
-    FFrom                : string;             external name 'from';
-    FGasLimit            : TBigInt;            external name 'gasLimit';
-    FGasPrice            : TWei;               external name 'gasPrice';
-    FHash                : string;             external name 'hash';
-    FIndex               : UInt64;             external name 'index';
-    FMaxFeePerGas        : TWei;               external name 'maxFeePerGas';
-    FMaxPriorityFeePerGas: TWei;               external name 'maxPriorityFeePerGas';
-    FNonce               : UInt64;             external name 'nonce';
-    FProvider            : TJsonRpcApiProvider external name 'provider';
-    FSignature           : TSignature;         external name 'signature';
-    FTo                  : string;             external name 'to';
-    FType                : UInt8;              external name 'type';
-    FValue               : TWei;               external name 'value';
+    FBlockHash           : string;           external name 'blockHash';
+    FBlockNumber         : UInt64;           external name 'blockNumber';
+    FChainId             : TBigInt;          external name 'chainId';
+    FData                : string;           external name 'data';
+    FFrom                : string;           external name 'from';
+    FGasLimit            : TBigInt;          external name 'gasLimit';
+    FGasPrice            : TWei;             external name 'gasPrice';
+    FHash                : string;           external name 'hash';
+    FIndex               : UInt64;           external name 'index';
+    FMaxFeePerGas        : TWei;             external name 'maxFeePerGas';
+    FMaxPriorityFeePerGas: TWei;             external name 'maxPriorityFeePerGas';
+    FNonce               : UInt64;           external name 'nonce';
+    FProvider            : TAbstractProvider external name 'provider';
+    FSignature           : TSignature;       external name 'signature';
+    FTo                  : string;           external name 'to';
+    FType                : UInt8;            external name 'type';
+    FValue               : TWei;             external name 'value';
   public
     {-------------------------------- methods ---------------------------------}
     // Resolves to the number of confirmations this transaction has.
@@ -279,7 +272,7 @@ type
     // When sending a transaction, this must be equal to the number of transactions ever sent by the sender.
     property Nonce: UInt64 read FNonce;
     // The provider this is connected to, which will influence how its methods will resolve its async inspection methods.
-    property Provider: TJsonRpcApiProvider read FProvider;
+    property Provider: TAbstractProvider read FProvider;
     // The signature for this transaction.
     property Signature: TSignature read FSignature;
     // The receiver of this transaction.
@@ -293,20 +286,20 @@ type
   // TTransactionReceipt includes additional information about a transaction that is only available after it has been mined.
   TTransactionReceipt = class external name 'ethers.TransactionReceipt'(TJSObject)
   strict private
-    FBlockHash        : string;              external name 'blockHash';
-    FBlockNumber      : UInt64;              external name 'blockNumber';
-    FContractAddress  : string;              external name 'contractAddress';
-    FCumulativeGasUsed: TBigInt;             external name 'cumulativeGasUsed';
-    FFee              : TWei;                external name 'fee';
-    FFrom             : string;              external name 'from';
-    FGasPrice         : TWei;                external name 'gasPrice';
-    FGasUsed          : TBigInt;             external name 'gasUsed';
-    FHash             : string;              external name 'hash';
-    FIndex            : UInt64;              external name 'index';
-    FProvider         : TJsonRpcApiProvider; external name 'provider';
-    FStatus           : UInt8;               external name 'status';
-    FTo               : string;              external name 'to';
-    FType             : UInt8;               external name 'type';
+    FBlockHash        : string;            external name 'blockHash';
+    FBlockNumber      : UInt64;            external name 'blockNumber';
+    FContractAddress  : string;            external name 'contractAddress';
+    FCumulativeGasUsed: TBigInt;           external name 'cumulativeGasUsed';
+    FFee              : TWei;              external name 'fee';
+    FFrom             : string;            external name 'from';
+    FGasPrice         : TWei;              external name 'gasPrice';
+    FGasUsed          : TBigInt;           external name 'gasUsed';
+    FHash             : string;            external name 'hash';
+    FIndex            : UInt64;            external name 'index';
+    FProvider         : TAbstractProvider; external name 'provider';
+    FStatus           : UInt8;             external name 'status';
+    FTo               : string;            external name 'to';
+    FType             : UInt8;             external name 'type';
   public
     {-------------------------------- methods ---------------------------------}
     // Resolves to the number of confirmations this transaction has.
@@ -338,7 +331,7 @@ type
     // The index of this transaction within the block.
     property Index: UInt64 read FIndex;
     // The provider connected to the log used to fetch additional details if necessary.
-    property Provider: TJsonRpcApiProvider read FProvider;
+    property Provider: TAbstractProvider read FProvider;
     // The status of this transaction, indicating success (i.e. 1) or a revert (i.e. 0)
     property Status: UInt8 read FStatus;
     // The address the transaction was sent to.
@@ -386,6 +379,15 @@ const
 const
   Ethers  : TEthers; external name 'window.ethers';   // injected by ethers.js
   Ethereum: JSValue; external name 'window.ethereum'; // injected by your crypto wallet (probably MetaMask)
+
+const
+  // To remember the differences between the block tags you can think of them in the order of oldest to newest block numbers: earliest < finalized < safe < latest < pending
+  BLOCK_EARLIEST  = 'earliest';  // The lowest numbered block the client has available. Intuitively, you can think of this as the first block created.
+  BLOCK_FINALIZED = 'finalized'; // The most recent crypto-economically secure block, that has been accepted by >2/3 of validators. Typically finalized in two epochs. Cannot be re-orged outside of manual intervention driven by community coordination. Intuitively, this block is very unlikely to be re-orged.
+  BLOCK_SAFE      = 'safe';      // The most recent crypto-economically secure block, cannot be re-orged outside of manual intervention driven by community coordination. Intuitively, this block is "unlikely" to be re-orged.
+  BLOCK_LATEST    = 'latest';    // The most recent block in the canonical chain observed by the client, this block may be re-orged out of the canonical chain even under healthy/normal conditions. Intuitively, this block is the most recent block observed by the client.
+  BLOCK_PENDING   = 'pending';   // A sample next block built by the client on top of latest and containing the set of transactions usually taken from local mempool. Intuitively, you can think of these as blocks that have not been mined yet.
+  // safe and finalized are new blog tags introduced after The Merge that define commitment levels for block finality. Unlike latest which increments one block at a time (ex 101, 102, 103), safe and finalized increment every "epoch" (32 blocks), which is every ~6 minutes assuming an average ~12 second block times.
 
 implementation
 
