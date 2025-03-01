@@ -9,6 +9,21 @@ uses
   JS;
 
 type
+  // Ether has various denominations just like any other currency. Wei is the smallest denomination.
+  TDenomination = (
+    wei,    // 1 ether = 1000000000000000000 wei
+    kwei,   // 1 ether = 1000000000000000 kwei
+    mwei,   // 1 ether = 1000000000000 mwei
+    gwei,   // 1 ether = 1000000000 gwei
+    szabo,  // 1 ether = 1000000 szabo
+    finney, // 1 ether = 1000 finney
+    ether,  // 1 ether = 1 ether
+    kether, // 1 ether = 0.001 kether
+    mether, // 1 ether = 0.000001 mether
+    gether, // 1 ether = 0.000000001 gether
+    tether  // 1 ether = 0.000000000001 tether
+  );
+
   TBigInt = class external name 'BigInt'(TJSObject)
   public
     function ToString(const base: Integer): string; external name 'toString';
@@ -61,10 +76,10 @@ type
   public
     // Returns True if value is a valid address.
     function IsAddress(const value: string): Boolean; external name 'isAddress';
-    // Convert ether (string) to TWei & convert TWei into ether (string)
+    // Convert ether (string) to wei & convert wei into ether (string)
     function ParseEther(const ether: string): TWei; external name 'parseEther';
     function FormatEther(const wei: TWei): string; external name 'formatEther';
-    // Convert decimal string to TWei & convert TWei into a decimal string
+    // Convert decimal string to wei & convert wei into a decimal string
     function ParseUnits(const value: string; const decimals: UInt8): TWei; external name 'parseUnits';
     function FormatUnits(const value: TWei; const decimals: UInt8): string; external name 'formatUnits';
     // The default provider, which is backed by a variety of third-party services (such as Infura, for example)
@@ -75,19 +90,36 @@ type
     property Version: string read FVersion;
   end;
 
-function WeiToHex(const value: TWei): string; // converts TWei to a hexadecimal string
-function HexToWei(const value: string): TWei; // converts a hexadecimal string to TWei
+function WeiToHex(const value: TWei): string; // converts wei to a hexadecimal string
+function HexToWei(const value: string): TWei; // converts a hexadecimal string to wei
+
+function StrToWei(const value: string; const from: TDenomination): TWei; // convert decimal string to wei
+function WeiToStr(const value: TWei; const &to: TDenomination): string;  // convert wei to decimal string
 
 const
-  MaxUint256: TBigInt; external name 'ethers.MaxUint256'; // constant for the maximum value for an "uint256"
-  MinInt256 : TBigInt; external name 'ethers.MinInt256';  // constant for the minimum value for an "int256"
-  MaxInt256 : TBigInt; external name 'ethers.MaxInt256';  // constant for the maximum value for an "int256"
+  MaxUint256: TBigInt; external name 'ethers.MaxUint256'; // constant for the maximum value for an uint256
+  MinInt256 : TBigInt; external name 'ethers.MinInt256';  // constant for the minimum value for an int256
+  MaxInt256 : TBigInt; external name 'ethers.MaxInt256';  // constant for the maximum value for an int256
 
 const
   Ethers  : TEthers; external name 'window.ethers';   // injected by ethers.js
   Ethereum: JSValue; external name 'window.ethereum'; // injected by your crypto wallet (probably MetaMask)
 
 implementation
+
+const
+  Decimals: array[TDenomination] of UInt8 = (
+    0,   // wei
+    3,   // kwei
+    6,   // mwei
+    9,   // gwei
+    12,  // szabo
+    15,  // finney
+    18,  // ether
+    21,  // kether
+    24,  // mether
+    27,  // gether
+    30); // tether
 
 function WeiToHex(const value: TWei): string;
 begin
@@ -97,6 +129,16 @@ end;
 function HexToWei(const value: string): TWei;
 asm
   return BigInt(value);
+end;
+
+function StrToWei(const value: string; const from: TDenomination): TWei;
+begin
+  Result := Ethers.ParseUnits(value, Decimals[from]);
+end;
+
+function WeiToStr(const value: TWei; const &to: TDenomination): string;
+begin
+  Result := Ethers.FormatUnits(value, Decimals[&to]);
 end;
 
 end.
