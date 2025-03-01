@@ -8,7 +8,7 @@ uses
   // pas2js
   JS,
   // web3
-  web3.signer, web3.transaction;
+  web3.signer;
 
 type
   TAbstractProvider = class abstract external name 'ethers.AbstractProvider'(TJSObject)

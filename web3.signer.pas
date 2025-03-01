@@ -6,9 +6,7 @@ interface
 
 uses
   // pas2js
-  JS,
-  // web3
-  web3.transaction;
+  JS;
 
 type
   TAbstractSigner = class abstract external name 'ethers.AbstractSigner'(TJSObject)
