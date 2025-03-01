@@ -1,33 +1,29 @@
-# pas2web3
+# web3.pas
 
-pas2web3 is a SDK for creating decentralized web apps in [Embarcadero Delphi](https://www.embarcadero.com/products/delphi).
+web3.pas is a SDK for creating decentralized web apps in [Embarcadero Delphi](https://www.embarcadero.com/products/delphi).
 
-pas2web3 is built upon [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp), a framework for creating modern web applications in Delphi.
+web3.pas is built upon [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp), a framework for creating modern web applications in Delphi.
 
-Under the hood, pas2web3 is powered by [ethers.js](https://ethers.org) — a JavaScript library designed to enable developers to interact with the Ethereum blockchain and the larger Ethereum ecosystem.
+Under the hood, web3.pas is powered by [ethers.js](https://ethers.org) — a JavaScript library designed to enable developers to interact with the Ethereum blockchain and the larger Ethereum ecosystem.
 
-Ethers.js is included with pas2web3 and as such you don’t need to download and install it. But you do need [Delphi Community Edition](https://www.embarcadero.com/products/delphi/starter) and [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp#downloads).
+Ethers.js gets downloaded at runtime and as such you don’t need to install it. But you do need [Delphi Community Edition](https://www.embarcadero.com/products/delphi/starter) and [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp#downloads).
 
 Last but not least, you need a browser-based crypto wallet. Please follow the below steps to install MetaMask into your web browser.
 
 ## Installation
 
-1. Clone this repo to a directory of your choosing, for example `C:\Projects\pas2web3`
-2. Start Delphi. Click on: _Tools > Options > Language > Delphi > Library_
-3. Add `C:\Projects\pas2web3` to the Library Path
-4. Start a new TMS Web Core project via _File > New > Other > TMS Web > TMS Web Application_
-5. Click on: _Project > Options > TMS Web > Compile_
-6. Add `C:\Projects\pas2web3` to the Source Path
-7. Run your application (F9)
-8. Navigate to https://metamask.io/
-9. Click on: Get MetaMask
-10. Follow the instructions and install MetaMask into your web browser
-
-Please note you will need to repeat steps 5 and 6 every time you start a new TMS Web Core project.
+1. Clone this repo to a directory of your choosing, for example `C:\Projects\web3`
+1. Launch Delphi and start a new TMS Web Core project via _File > New > Other > TMS Web > TMS Web Application_
+1. Save your application to a directory of your choosing
+1. Click on: _Project > Add to Project_ and add `web3.pas` to your project
+1. Run your application (F9)
+1. Navigate to https://metamask.io/
+1. Click on: Get MetaMask
+1. Follow the instructions and install MetaMask into your web browser
 
 ## Configuration
 
-Before you can use pas2web3 in your TMS Web Core project, you will need to manually add the following snippet to the `<head>` section of your project's HTML document:
+Before you can use web3.pas in your TMS Web Core project, you will need to manually add the following snippet to the `<head>` section of your project's HTML document:
 
 ```html
 <script type="module">
@@ -36,14 +32,7 @@ Before you can use pas2web3 in your TMS Web Core project, you will need to manua
 </script>
 ```
 
-In your Delphi unit, add the following to your uses clause:
-
-```delphi
-uses
-  web3, web3.signer;
-```
-
-You are now ready to call into a global singleton named `Ethers`:
+Assuming you have added `web3` to your uses clause, you can now call into a global singleton named `Ethers`:
 
 ```delphi
 var
@@ -60,7 +49,7 @@ The very first thing needed to begin interacting with the blockchain is connecti
 
 ```delphi
 var
-  provider: TJsonRpcApiProvider;
+  provider: TJsonRpcProvider;
 begin
   if not Assigned(Ethereum) then
     // If MetaMask is not installed, we use the default provider, which is backed
@@ -100,8 +89,8 @@ To write to the blockchain you require access to a private key. In most cases, t
 
 ```delphi
 var
-  provider: TJsonRpcApiProvider;
-  signer  : TJsonRpcSigner;
+  provider: TJsonRpcProvider;
+  signer  : TAbstractSigner;
 begin
   signer := nil;
   if Assigned(Ethereum) then
@@ -111,7 +100,7 @@ begin
     provider := Ethers.BrowserProvider.New(Ethereum);
     // It also provides an opportunity to request access to write operations, which
     // will be performed by the private key that MetaMask manages for the user.
-    signer := await(TJsonRpcSigner, provider.GetSigner);
+    signer := await(TAbstractSigner, provider.GetSigner);
   end else
     // If MetaMask is not installed, we use the default provider, which is backed
     // by a variety of third-party services (such as Infura).
@@ -145,8 +134,8 @@ The [ethers.js documentation](https://docs.ethers.org/v6/) covers many of the mo
 
 ## License
 
-Distributed under the [GPL-3.0](https://github.com/svanas/pas2web3/blob/master/LICENSE) license.
+Distributed under the [GPL-3.0](https://github.com/svanas/web3.pas/blob/master/LICENSE) license.
 
 ## Commercial support and training
 
-Commercial support and training is available from [Stefan](https://devstory.fyi/svanas).
+Commercial support and training is available from [Stefan](https://svanas.github.io/).
