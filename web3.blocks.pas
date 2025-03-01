@@ -6,9 +6,7 @@ interface
 
 uses
   // pas2js
-  JS,
-  // web3
-  web3.misc;
+  JS;
 
 type
   // TBlock represents the data associated with a full block on Ethereum.
