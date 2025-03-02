@@ -12,10 +12,10 @@ Last but not least, you need a browser-based crypto wallet. Please follow the be
 
 ## Installation
 
-1. Clone this repo to a directory of your choosing, for example `C:\Projects\web3`
+1. Clone this repo to a directory of your choosing, for example `C:\Projects\web3.pas`
 1. Launch Delphi and start a new TMS Web Core project via _File > New > Other > TMS Web > TMS Web Application_
 1. Save your application to a directory of your choosing
-1. Click on: _Project > Add to Project_ and add `web3.pas` to your project
+1. Click on: _Project > Add to Project_ and add `web3.pas` (the unit, not the directory) to your project
 1. Run your application (F9)
 1. Navigate to https://metamask.io/
 1. Click on: Get MetaMask
@@ -85,12 +85,12 @@ console.log(await(UInt64, provider.GetTransactionCount('vitalik.eth')));
 
 ## Sending Transactions
 
-To write to the blockchain you require access to a private key. In most cases, those private keys are not accessible directly to your code, and instead you make requests via a [Signer](https://docs.ethers.org/v6/api/providers/#Signer), which dispatches the request to a service (such as [MetaMask](https://metamask.io/)) which provides strictly gated access and requires feedback to the user to approve or reject operations:
+To write to the blockchain you need access to a private key. In most cases, those private keys are not accessible directly to your code, and instead you make requests via a [Signer](https://docs.ethers.org/v6/api/providers/#Signer), which dispatches the request to a service (such as [MetaMask](https://metamask.io/)) which provides strictly gated access and requires feedback to the user to approve or reject operations:
 
 ```delphi
 var
   provider: TJsonRpcProvider;
-  signer  : TAbstractSigner;
+  signer  : TJsonRpcSigner;
 begin
   signer := nil;
   if Assigned(Ethereum) then
@@ -100,7 +100,7 @@ begin
     provider := Ethers.BrowserProvider.New(Ethereum);
     // It also provides an opportunity to request access to write operations, which
     // will be performed by the private key that MetaMask manages for the user.
-    signer := await(TAbstractSigner, provider.GetSigner);
+    signer := await(TJsonRpcSigner, provider.GetSigner);
   end else
     // If MetaMask is not installed, we use the default provider, which is backed
     // by a variety of third-party services (such as Infura).
