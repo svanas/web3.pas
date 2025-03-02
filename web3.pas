@@ -82,9 +82,11 @@ type // forward declarations
     property MaxPriorityFeePerGas: TWei read FMaxPriorityFeePerGas;
   end;
 
-  {------------------------------ TAbstractSigner -----------------------------}
+  {------------------------------ TJsonRpcSigner ------------------------------}
 
-  TAbstractSigner = class abstract external name 'ethers.AbstractSigner'(TJSObject)
+  TAbstractSigner = class abstract external name 'ethers.AbstractSigner'(TJSObject);
+
+  TJsonRpcSigner = class external name 'ethers.JsonRpcSigner'(TAbstractSigner)
   public
     function SendTransaction(const tx: TJSObject): TTransactionResponse; async; external name 'sendTransaction';
   end;
@@ -127,7 +129,7 @@ type // forward declarations
   TJsonRpcProvider = class external name 'ethers.JsonRpcApiProvider'(TAbstractProvider)
   public
     // Resolves the signer managed by MetaMask
-    function GetSigner: TAbstractSigner; async; external name 'getSigner';
+    function GetSigner: TJsonRpcSigner; async; external name 'getSigner';
   end;
 
   TBrowserProvider = class external name 'ethers.BrowserProvider'(TJsonRpcProvider)
