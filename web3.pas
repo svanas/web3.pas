@@ -371,7 +371,8 @@ function HexToWei(const value: string): TWei; // converts a hexadecimal string t
 function StrToWei(const value: string; const from: TDenomination): TWei; // convert decimal string to wei
 function WeiToStr(const value: TWei; const &to: TDenomination): string;  // convert wei to decimal string
 
-function Transaction(const &to: string; const value: TWei; const data: string = '0x'): TJSObject;
+function Transaction(const &to: string; const value: TWei; const data: string = '0x'): TJSObject; overload;
+function Transaction(const from, &to: string; const value: TWei; const data: string = '0x'): TJSObject; overload;
 
 const
   MaxUint256: TBigInt; external name 'ethers.MaxUint256'; // constant for the maximum value for an uint256
@@ -433,6 +434,12 @@ begin
   Result['to']    := &to;
   Result['value'] := value;
   Result['data']  := data;
+end;
+
+function Transaction(const from, &to: string; const value: TWei; const data: string): TJSObject;
+begin
+  Result := web3.Transaction(&to, value, data);
+  Result['from'] := from;
 end;
 
 end.
