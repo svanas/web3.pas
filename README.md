@@ -128,6 +128,101 @@ receipt := await(TTransactionReceipt, response.Wait);
 console.log(receipt.Status); // 1 for success, 0 for failure
 ```
 
+## Interacting with Smart Contracts
+
+A smart contract is a program that has been deployed to the blockchain, which includes some code and has allocated storage which it can read from and write to.
+
+Smart contracts can have many applications, ranging from sports betting to online voting. But the true power of smart contracts is in managing assets that have value and are scarce.
+
+Once added to the blockchain, a smart contract becomes public and cannot be modified or removed. This assures your users that the rules are transparent and will never change.
+
+Here is how to call a read-only method and get the symbol of [Tether](https://etherscan.io/token/0xdac17f958d2ee523a2206206994597c13d831ec7), a popular ERC-20 token contract on Ethereum:
+
+```delphi
+var
+  abi     : TJSArray;
+  contract: TContract;
+  symbol  : string;
+const
+  tether = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+begin
+  // the smart contract ABI (or, as in this case, a portion of it)
+  abi := JS.toArray(TJSJSON.parse('''
+  [
+    {
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+  '''));
+
+  // create a contract. please note we connect it to a Provider,
+  // so it may only acccess read-only methods.
+  contract := TContract.New(tether, abi, provider);
+
+  // get the symbol name for the token
+  symbol := await(string, contract.Call('symbol'));
+  console.log(symbol);
+end;
+```
+
+## State-changing methods
+
+To change smart contract state, you need to call methods with a [Signer](https://docs.ethers.org/v6/api/providers/#Signer), which signs your call with your private key:
+
+```delphi
+// the smart contract ABI (or, as in this case, a portion of it)
+abi := JS.toArray(TJSJSON.parse('''
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "transfer",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
+'''));
+
+// create a contract. please note we connect it to a Signer,
+// so it can make state changing transactions.
+contract := TContract.New(tether, abi, signer);
+
+// send the transaction
+response := await(TTransactionResponse, contract.Call('transfer', [
+  '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // to: vitalik.eth
+  Ethers.ParseUnits('10.0', 6)                  // value: 10 USDT
+]));
+
+// wait for the transaction to be included with the next block.
+receipt := await(TTransactionReceipt, response.Wait);
+```
+
 ## Learn more
 
 The [ethers.js documentation](https://docs.ethers.org/v6/) covers many of the most common operations that developers require.

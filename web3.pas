@@ -342,6 +342,19 @@ type // forward declarations
     property &Type: UInt8 read FType;
   end;
 
+  TBaseContract = class abstract external name 'ethers.BaseContract'(TJSObject)
+  public
+    constructor New(const target: string; const abi: TJSArray; const provider: TAbstractProvider); overload;
+    constructor New(const target: string; const abi: TJSArray; const signer: TJsonRpcSigner); overload;
+  end;
+
+  TContract = class external name 'ethers.Contract'(TBaseContract);
+
+  TContractHelper = class helper for TContract
+  public
+    function Call(const method: string; const args: TArray<JSValue> = []): TJSPromise;
+  end;
+
   {--------------------------------- TEthers ----------------------------------}
 
   TEthers = class external name 'ethers'(TJSObject)
@@ -394,6 +407,10 @@ const
 
 implementation
 
+uses
+  // Delphi
+  System.SysUtils;
+
 const
   Decimals: array[TDenomination] of UInt8 = (
     0,   // wei
@@ -440,6 +457,19 @@ function Transaction(const from, &to: string; const value: TWei; const data: str
 begin
   Result := web3.Transaction(&to, value, data);
   Result['from'] := from;
+end;
+
+function TContractHelper.Call(const method: string; const args: TArray<JSValue>): TJSPromise;
+var
+  func, return: JSValue;
+begin
+  func := Self[method];
+  if not JS.isFunction(func) then
+    raise Exception.Create(method + ' is not a function');
+  return := TJSFunction(func).apply(Self, args);
+  if not(JS.isObject(return) and JS.isFunction(JS.toObject(return)['then'])) then
+    raise Exception.Create(method + '() is not async');
+  Result := TJSPromise(return)
 end;
 
 end.
