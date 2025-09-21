@@ -1,6 +1,6 @@
 # web3.pas
 
-web3.pas is a SDK for creating decentralized Web apps in [Embarcadero Delphi](https://www.embarcadero.com/products/delphi).
+web3.pas is a SDK for creating decentralized web apps in [Embarcadero Delphi](https://www.embarcadero.com/products/delphi).
 
 web3.pas is built upon [TMS Web Core](https://www.tmssoftware.com/site/tmswebcore.asp), a framework for creating modern web applications in Delphi.
 
