@@ -44,6 +44,12 @@ type // forward declarations
     function ToString(const base: Integer): string; external name 'toString';
   end;
 
+  TBigIntHelper = class helper for TBigInt
+  public
+    function ToInt : NativeInt;
+    function ToUInt: NativeUInt;
+  end;
+
   TWei = TBigInt;
 
   {--------------------------------- TNetwork ---------------------------------}
@@ -411,6 +417,16 @@ uses
   // Delphi
   System.SysUtils;
 
+function TBigIntHelper.ToInt: NativeInt;
+begin
+  Result := StrToInt(Self.ToString);
+end;
+
+function TBigIntHelper.ToUInt: NativeUInt;
+begin
+  Result := StrToUInt(Self.ToString);
+end;
+
 const
   Decimals: array[TDenomination] of UInt8 = (
     0,   // wei
@@ -469,7 +485,7 @@ begin
   return := TJSFunction(func).apply(Self, args);
   if not(JS.isObject(return) and JS.isFunction(JS.toObject(return)['then'])) then
     raise Exception.Create(method + '() is not async');
-  Result := TJSPromise(return)
+  Result := TJSPromise(return);
 end;
 
 end.
