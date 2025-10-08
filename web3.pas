@@ -110,6 +110,8 @@ type // forward declarations
     function GetBlock(const block: string): TBlock; async; external name 'getBlock';
     // Get the current block number.
     function GetBlockNumber: UInt64; async; external name 'getBlockNumber';
+    // Get the bytecode for address.
+    function GetCode(const address: string): string; async; external name 'getCode';
     // Get the best guess at the recommended TFeeData.
     function GetFeeData: TFeeData; async; external name 'getFeeData';
     // Get the connected TNetwork.
