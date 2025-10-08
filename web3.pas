@@ -350,6 +350,8 @@ type // forward declarations
     property &Type: UInt8 read FType;
   end;
 
+  {-------------------------------- TContract ---------------------------------}
+
   TBaseContract = class abstract external name 'ethers.BaseContract'(TJSObject)
   public
     constructor New(const target: string; const abi: TJSArray; const provider: TAbstractProvider); overload;
@@ -376,8 +378,8 @@ type // forward declarations
     function ParseEther(const ether: string): TWei; external name 'parseEther';
     function FormatEther(const wei: TWei): string; external name 'formatEther';
     // Convert decimal string to wei & convert wei into a decimal string
-    function ParseUnits(const value: string; const decimals: UInt8): TWei; external name 'parseUnits';
-    function FormatUnits(const value: TWei; const decimals: UInt8): string; external name 'formatUnits';
+    function ParseUnits(const value: string; const decimals: UInt8): TBigInt; external name 'parseUnits';
+    function FormatUnits(const value: TBigInt; const decimals: UInt8): string; external name 'formatUnits';
     // The default provider, which is backed by a variety of third-party services (such as Infura, for example)
     function GetDefaultProvider: TJsonRpcProvider; external name 'getDefaultProvider';
     // TBrowserProvider is intended to wrap an injected provider which adheres to the EIP-1193 standard
@@ -385,6 +387,9 @@ type // forward declarations
     // The current version of Ethers
     property Version: string read FVersion;
   end;
+
+function Provider: TJsonRpcProvider;
+function Signer: TJsonRpcSigner; async;
 
 function WeiToHex(const value: TWei): string; // converts wei to a hexadecimal string
 function HexToWei(const value: string): TWei; // converts a hexadecimal string to wei
@@ -396,7 +401,7 @@ function Transaction(const &to: string; const value: TWei; const data: string = 
 function Transaction(const from, &to: string; const value: TWei; const data: string = '0x'): TJSObject; overload;
 
 const
-  MaxUint256: TBigInt; external name 'ethers.MaxUint256'; // constant for the maximum value for an uint256
+  MaxUInt256: TBigInt; external name 'ethers.MaxUint256'; // constant for the maximum value for an uint256
   MinInt256 : TBigInt; external name 'ethers.MinInt256';  // constant for the minimum value for an int256
   MaxInt256 : TBigInt; external name 'ethers.MaxInt256';  // constant for the maximum value for an int256
 
@@ -427,6 +432,22 @@ end;
 function TBigIntHelper.ToUInt: NativeUInt;
 begin
   Result := StrToUInt(Self.ToString);
+end;
+
+function Provider: TJsonRpcProvider;
+begin
+  if Ethereum = nil then
+    Result := Ethers.GetDefaultProvider
+  else
+    Result := Ethers.BrowserProvider.New(Ethereum);
+end;
+
+function Signer: TJsonRpcSigner;
+begin
+  if Ethereum <> nil then
+    Result := await(TJsonRpcSigner, Ethers.BrowserProvider.New(Ethereum).GetSigner)
+  else
+    Result := nil;
 end;
 
 const
