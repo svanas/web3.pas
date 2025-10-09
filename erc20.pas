@@ -31,11 +31,17 @@ type
     function BalanceOf(const owner: string): TBigInt; async;
     function Allowance(const owner, spender: string): TBigInt; async;
     {-------------------------------- helpers ---------------------------------}
-    function Scale(const amount: Double): TBigInt; async;
-    function Unscale(const amount: TBigInt): Double; async;
+    function Scale(const amount: string): TBigInt; async;     // from string-with-decimals to BigInt
+    function Unscale(const amount: TBigInt): string; async;   // from BigInt to string-with-decimals
+    function ScaleEx(const amount: Double): TBigInt; async;   // from floating point to BigInt
+    function UnscaleEx(const amount: TBigInt): Double; async; // from BigInt to floating piont
   end;
 
-  IReadWriteERC20 = interface(IReadOnlyERC20);
+  IReadWriteERC20 = interface(IReadOnlyERC20)
+    function Approve(const spender: string; const value: TBigInt): TTransactionResponse; async;
+    function Transfer(const &to: string; const value: TBigInt): TTransactionResponse; async;
+    function TransferFrom(const from, &to: string; const value: TBigInt): TTransactionResponse; async;
+  end;
 
 function ReadOnly(const address: string): IReadOnlyERC20;
 function ReadWrite(const address: string): IReadWriteERC20; async;
@@ -257,8 +263,10 @@ type
     function TotalSupply: TBigInt; async;
     function BalanceOf(const owner: string): TBigInt; async;
     function Allowance(const owner, spender: string): TBigInt; async;
-    function Scale(const amount: Double): TBigInt; async;
-    function Unscale(const amount: TBigInt): Double; async;
+    function Scale(const amount: string): TBigInt; async;
+    function Unscale(const amount: TBigInt): string; async;
+    function ScaleEx(const amount: Double): TBigInt; async;
+    function UnscaleEx(const amount: TBigInt): Double; async;
     constructor Create(const aContract: TContract);
   end;
 
@@ -298,12 +306,22 @@ begin
   Result := await(TBigInt, FContract.Call('allowance', [owner, spender]));
 end;
 
-function TReadOnlyERC20.Scale(const amount: Double): TBigInt;
+function TReadOnlyERC20.Scale(const amount: string): TBigInt;
+begin
+  Result := Ethers.ParseUnits(amount, await(TBigInt, Self.Decimals).ToUInt);
+end;
+
+function TReadOnlyERC20.Unscale(const amount: TBigInt): string;
+begin
+  Result := Ethers.FormatUnits(amount, await(TBigInt, Self.Decimals).ToUInt);
+end;
+
+function TReadOnlyERC20.ScaleEx(const amount: Double): TBigInt;
 begin
   Result := Ethers.ParseUnits(FloatToStr(amount, TFormatSettings.Invariant), await(TBigInt, Self.Decimals).ToUInt);
 end;
 
-function TReadOnlyERC20.Unscale(const amount: TBigInt): Double;
+function TReadOnlyERC20.UnscaleEx(const amount: TBigInt): Double;
 begin
   Result := StrToFloat(Ethers.FormatUnits(amount, await(TBigInt, Self.Decimals).ToUInt), TFormatSettings.Invariant);
 end;
@@ -311,7 +329,27 @@ end;
 {------------------------------ TReadWriteERC20 -------------------------------}
 
 type
-  TReadWriteERC20 = class(TReadOnlyERC20, IReadWriteERC20);
+  TReadWriteERC20 = class(TReadOnlyERC20, IReadWriteERC20)
+  public
+    function Approve(const spender: string; const value: TBigInt): TTransactionResponse; async;
+    function Transfer(const &to: string; const value: TBigInt): TTransactionResponse; async;
+    function TransferFrom(const from, &to: string; const value: TBigInt): TTransactionResponse; async;
+  end;
+
+function TReadWriteERC20.Approve(const spender: string; const value: TBigInt): TTransactionResponse;
+begin
+  Result := await(TTransactionResponse, FContract.Call('approve', [spender, value]));
+end;
+
+function TReadWriteERC20.Transfer(const &to: string; const value: TBigInt): TTransactionResponse;
+begin
+  Result := await(TTransactionResponse, FContract.Call('transfer', [&to, value]));
+end;
+
+function TReadWriteERC20.TransferFrom(const from, &to: string; const value: TBigInt): TTransactionResponse;
+begin
+  Result := await(TTransactionResponse, FContract.Call('transferFrom', [from, &to, value]));
+end;
 
 {-------------------------------- constructors --------------------------------}
 
