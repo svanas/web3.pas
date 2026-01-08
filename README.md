@@ -227,6 +227,16 @@ receipt := await(TTransactionReceipt, response.Wait);
 
 The [ethers.js documentation](https://docs.ethers.org/v6/) covers many of the most common operations that developers require.
 
+## Videos
+
+If you are still confused about what Ethereum and smart contracts and dapps (aka decentralized apps) are, watch this 3-part presentation from Ethereum DevCon in 2015:
+
+1. https://www.youtube.com/watch?v=seU7DykOxfc
+2. https://www.youtube.com/watch?v=nPpi9BPkRbo
+3. https://www.youtube.com/watch?v=Ij5tGo8cp80
+
+While Mist doesn’t exist anymore (it has been replaced with your favorite web browser plus [MetaMask](https://metamask.io/) or any other crypto wallet such as [Rabby](https://rabby.io/) or [Phantom](https://phantom.com/)), the above videos explain the principles behind Ethereum and smart contracts and the decentralized web pretty good.
+
 ## License
 
 Distributed under the [GPL-3.0](https://github.com/svanas/web3.pas/blob/master/LICENSE) license.
